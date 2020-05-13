@@ -1,31 +1,33 @@
-import random
+import random, time, os
 import time
 import os
 
 bank = 1000
 bankBeforeBet = 0
-card = 0
+cardsInDeck = 48
 
-
-deck = ['K', 'K', 'K', 'Q', 'Q', 'Q', 'A', 'A', 'A', 10, 10, 10, 9, 9, 9, 8, 8, 8, 7, 7, 7,
-        6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2]
+deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7,
+        6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2]
 playerHand = []
 dealerHand = []
 
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
 def reinitiateVars():
-    global deck
-    global playerHand
-    global dealerHand
-    deck = ['K', 'K', 'K', 'Q', 'Q', 'Q', 'A', 'A', 'A', 10, 10, 10, 9, 9, 9, 8, 8, 8, 7, 7, 7,
-            6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2]
+    global deck, playerHand, dealerHand, cardsInDeck
+    deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7,
+            7, 6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2]
     playerHand = []
     dealerHand = []
+    cardsInDeck = 48
 
 
 def showHand(somelist):
     for obj in somelist:
-        print(obj, end=", ")
+        print(obj, end=" ")
     print(" ")
 
 
@@ -45,12 +47,12 @@ def sumOfHand(someList):
         if localsum > 21 and localcheckace != 0:
             for i in range(localcheckace):
                 localsum -= 10
+                localcheckace -= 1
     return localsum
 
 
 def takeBets():
-    global bank
-    global bet
+    global bank, bet
     bet = int(input("You have " + str(bank) +
                     "$ in the bank. How much do you want to bet?\n"))
     while bet > bank or bet <= 0:
@@ -59,13 +61,11 @@ def takeBets():
 
 
 def chooseCard():
-    global deck, card
-    someNumber = random.randint(1, 43)
-    try:
-        card = deck[someNumber]
-    except:
-        chooseCard()
+    global deck, cardsInDeck
+    someNumber = random.randint(0, cardsInDeck-1)
+    card = deck[someNumber]
     deck.remove(card)
+    cardsInDeck -= 1
     return card
 
 
@@ -97,8 +97,7 @@ def dealerTurn():
 
 def playerTurn():
     def playerTurnNoDouble():
-        global bet
-        global playerHand
+        global bet, playerHand
         choiceLocal1 = int(
             input("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n"))
         sumsum1 = sumOfHand(playerHand)
@@ -109,7 +108,7 @@ def playerTurn():
             return 0
 
         if choiceLocal1 == 1:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            clear()
             print("You have chosen to hit.\n")
             cardChosen1 = chooseCard()
             playerHand.append(cardChosen1)
@@ -123,12 +122,11 @@ def playerTurn():
                 return playerTurnNoDouble()
 
         elif choiceLocal1 == 2:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            clear()
             print("You have chosen to stand.\n")
             return
 
-    global bet
-    global playerHand
+    global bet, playerHand
 
     sumsum = sumOfHand(playerHand)
 
@@ -142,7 +140,7 @@ def playerTurn():
         input("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n3. Double\n"))
 
     if choiceLocal == 1:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        clear()
         print("You have chosen to hit.\n")
         cardChosen = chooseCard()
         playerHand.append(cardChosen)
@@ -156,12 +154,12 @@ def playerTurn():
             return 0
 
     elif choiceLocal == 2:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        clear()
         print("You have chosen to stand.")
         return
 
     else:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        clear()
         print("You have chosen to double down. Good luck.")
         bet = bet * 2
         chosenCard2 = chooseCard()
@@ -175,10 +173,7 @@ def playerTurn():
 
 
 def gameStart():
-    global bank
-    global bet
-    global playerHand
-    global dealerHand
+    global bank, bet, playerHand, dealerHand
     dealHand(dealerHand)
     dealHand(playerHand)
     print("\nDealer's hand: " + str(dealerHand[0]) + " and one face down")
@@ -192,6 +187,8 @@ def gameStart():
         print("You have busted. Damn.")
         bank -= bet
     elif conclusion == 2:
+        print("Your hand:", end=" ")
+        showHand(playerHand)
         print("You have won with a blackjack!")
         bank += bet
     else:
@@ -199,22 +196,26 @@ def gameStart():
         dealersResult = dealerTurn()
         if dealersResult == 0:
             print("The house has gone bust. You have won.")
-            bank += bet*2
+            bank += bet
         else:
             if sumOfHand(playerHand) == sumOfHand(dealerHand):
                 print("It is a tie. The bet is off.")
                 bank = bankBeforeBet
             elif sumOfHand(playerHand) > sumOfHand(dealerHand):
+                print("Your hand:", end=" ")
+                showHand(playerHand)
                 print("You have won.")
-                bank += bet*2
+                bank += bet
             else:
+                print("Your hand:", end=" ")
+                showHand(playerHand)
                 print("You have lost.")
                 bank -= bet
 
 
 playAgain = 1
 while playAgain == 1:
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear()
     bankBeforeBet = bank
     bet = takeBets()
     time.sleep(1)
