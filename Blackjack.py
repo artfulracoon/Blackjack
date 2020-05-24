@@ -1,6 +1,7 @@
-import random, time, os
+import random
 import time
 import os
+import msvcrt
 
 bank = 1000
 bankBeforeBet = 0
@@ -52,12 +53,67 @@ def sumOfHand(someList):
 
 
 def takeBets():
-    global bank, bet
-    bet = int(input("You have " + str(bank) +
-                    "$ in the bank. How much do you want to bet?\n"))
-    while bet > bank or bet <= 0:
-        takeBets()
-    return bet
+    def betInputCaller():
+
+        print("Current bet: " + str(currentBet) + "\n")
+        print("You have " + str(bank) +
+              "$ in the bank. How much do you want to bet?\n")
+        print(
+            "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
+        try:
+            someInput = int(msvcrt.getch())
+        except ValueError:
+            clear()
+            print("Wrong value input! Please try again:")
+            print(
+                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
+            someInput = int(msvcrt.getch())
+        while betInput not in [0, 1, 2, 3, 4, 5, 6, 9]:
+            clear()
+            print("Current bet: " + str(currentBet) + "\n")
+            print("Wrong Input! Please state your bet according to: ")
+            print(
+                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
+
+            someInput = int(msvcrt.getch())
+        return someInput
+
+    global bank
+    currentBet = 0
+    betInput = 1
+    while betInput != 0:
+
+        betInput = betInputCaller()
+
+        if betInput == 1:
+            betCurrent = 5
+        elif betInput == 2:
+            betCurrent = 10
+        elif betInput == 3:
+            betCurrent = 50
+        elif betInput == 4:
+            betCurrent = 100
+        elif betInput == 5:
+            betCurrent = 500
+        elif betInput == 6:
+            betCurrent = 1000
+        elif betInput == 9:
+            if currentBet == 0:
+                clear()
+                print("You cannot bet below zero!")
+                time.sleep(1.5)
+                currentBet -= betCurrent
+            else:
+                currentBet -= betCurrent*2
+
+        currentBet += betCurrent
+        if currentBet > bank:
+            currentBet -= betCurrent
+            clear()
+            print("Your bet cannot exceed your bank!")
+            time.sleep(1.5)
+        clear()
+    return currentBet
 
 
 def chooseCard():
@@ -103,7 +159,7 @@ def playerTurn():
         sumsum1 = sumOfHand(playerHand)
 
         if sumsum1 == 21:
-            return "\nYou have won this round with a blackjack."
+            return 2
         elif sumsum1 > 21:
             return 0
 
@@ -190,7 +246,7 @@ def gameStart():
         print("Your hand:", end=" ")
         showHand(playerHand)
         print("You have won with a blackjack!")
-        bank += bet
+        bank += int(bet*1.5)
     else:
         time.sleep(1)
         dealersResult = dealerTurn()
