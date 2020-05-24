@@ -5,9 +5,9 @@ import msvcrt
 
 bank = 1000
 bankBeforeBet = 0
-cardsInDeck = 48
+cardsInDeck = 52
 
-deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7,
+deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J', 'J', 'J', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7,
         6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2]
 playerHand = []
 dealerHand = []
@@ -19,11 +19,11 @@ def clear():
 
 def reinitiateVars():
     global deck, playerHand, dealerHand, cardsInDeck
-    deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7,
+    deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J', 'J', 'J', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7,
             7, 6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2]
     playerHand = []
     dealerHand = []
-    cardsInDeck = 48
+    cardsInDeck = 52
 
 
 def showHand(somelist):
@@ -36,7 +36,7 @@ def sumOfHand(someList):
     localsum = 0
     localcheckace = 0
     for obj in someList:
-        if obj == 'K' or obj == 'Q':
+        if obj == 'K' or obj == 'Q' or obj == 'J':
             obj = 10
         elif obj == 'A':
             if localsum + 11 > 21:
@@ -61,13 +61,13 @@ def takeBets():
         print(
             "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
         try:
-            someInput = int(msvcrt.getch())
+            theInput = int(msvcrt.getch())
         except ValueError:
             clear()
             print("Wrong value input! Please try again:")
             print(
                 "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
-            someInput = int(msvcrt.getch())
+            theInput = int(msvcrt.getch())
         while betInput not in [0, 1, 2, 3, 4, 5, 6, 9]:
             clear()
             print("Current bet: " + str(currentBet) + "\n")
@@ -75,8 +75,8 @@ def takeBets():
             print(
                 "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
 
-            someInput = int(msvcrt.getch())
-        return someInput
+            theInput = int(msvcrt.getch())
+        return theInput
 
     global bank
     currentBet = 0
