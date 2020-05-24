@@ -59,32 +59,30 @@ def takeBets():
         print("You have " + str(bank) +
               "$ in the bank. How much do you want to bet?\n")
         print(
-            "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
-        try:
-            theInput = int(msvcrt.getch())
-        except ValueError:
-            clear()
-            print("Wrong value input! Please try again:")
-            print(
-                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
-            theInput = int(msvcrt.getch())
-        while betInput not in [0, 1, 2, 3, 4, 5, 6, 9]:
+            "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Undo\n\nEnter to continue")
+
+        theInput = msvcrt.getch()
+
+        if theInput == b'\r':
+            return theInput
+
+        while int(theInput) not in [1, 2, 3, 4, 5, 6, 9]:
             clear()
             print("Current bet: " + str(currentBet) + "\n")
             print("Wrong Input! Please state your bet according to: ")
             print(
-                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Revert\n0. Continue\n")
+                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Undo\n\nEnter to continue")
 
-            theInput = int(msvcrt.getch())
-        return theInput
+            theInput = msvcrt.getch()
+        return int(theInput)
 
     global bank
     currentBet = 0
-    betInput = 1
-    while betInput != 0:
+    while True:
 
         betInput = betInputCaller()
-
+        if betInput == b'\r':
+            break
         if betInput == 1:
             betCurrent = 5
         elif betInput == 2:
@@ -154,8 +152,10 @@ def dealerTurn():
 def playerTurn():
     def playerTurnNoDouble():
         global bet, playerHand
-        choiceLocal1 = int(
-            input("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n"))
+        choiceLocal1 = 3
+        while choiceLocal1 not in [1,2]:
+            print("\nHit, Stand?\n1. Hit\n2. Stand\n")
+            choiceLocal1 = int(msvcrt.getch())
         sumsum1 = sumOfHand(playerHand)
 
         if sumsum1 == 21:
@@ -192,8 +192,16 @@ def playerTurn():
     elif sumsum > 21:
         return 0
 
-    choiceLocal = int(
-        input("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n3. Double\n"))
+    if bet*2 <= bank:
+        choiceLocal = 4
+        while choiceLocal not in [1, 2, 3]:
+            print("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n3. Double\n")
+            choiceLocal = int(msvcrt.getch())
+    else:
+        choiceLocal = 3
+        while choiceLocal not in [1, 2]:
+            print("\nHit or Stand?\n1. Hit\n2. Stand\n")
+            choiceLocal = int(msvcrt.getch())
 
     if choiceLocal == 1:
         clear()
@@ -217,14 +225,14 @@ def playerTurn():
     else:
         clear()
         print("You have chosen to double down. Good luck.")
-        bet = bet * 2
+        bet *= 2
         chosenCard2 = chooseCard()
         playerHand.append(chosenCard2)
+        print("You draw the card: " + str(chosenCard2))
+        print("Your hand:", end=" ")
+        showHand(playerHand)
+        print("Your new sum is: " + str(sumOfHand(playerHand)) + "\n")
         if sumOfHand(playerHand) > 21:
-            print("You draw the card: " + str(chosenCard2))
-            print("Your hand:", end=" ")
-            showHand(playerHand)
-            print("Your new sum is: " + str(sumOfHand(playerHand)) + "\n")
             return 0
 
 
@@ -232,7 +240,8 @@ def gameStart():
     global bank, bet, playerHand, dealerHand
     dealHand(dealerHand)
     dealHand(playerHand)
-    print("\nDealer's hand: " + str(dealerHand[0]) + " and one face down")
+    print("Your bet: " + str(bet))
+    print("\nDealer's hand: " + str(dealerHand[0]) + " and one face down\n")
     print("Your hand:", end=" ")
     showHand(playerHand)
     print("Your cards sum up to: " + str(sumOfHand(playerHand)))
@@ -240,32 +249,32 @@ def gameStart():
     if conclusion == 0:
         print("Your hand consists of: ", end=" ")
         showHand(playerHand)
-        print("You have busted. Damn.")
+        print("You have busted. \nLoss: " + str(bet) + "$")
         bank -= bet
     elif conclusion == 2:
         print("Your hand:", end=" ")
         showHand(playerHand)
-        print("You have won with a blackjack!")
-        bank += int(bet*1.5)
+        print("You have won with a blackjack! \nGain: " + str(bet*1.5) + "$")
+        bank += int(bet*2.5)
     else:
         time.sleep(1)
         dealersResult = dealerTurn()
         if dealersResult == 0:
-            print("The house has gone bust. You have won.")
+            print("Dealer busted. You have won. \nGain: " + str(bet) + "$")
             bank += bet
         else:
             if sumOfHand(playerHand) == sumOfHand(dealerHand):
-                print("It is a tie. The bet is off.")
+                print("Tie. The bet is off.")
                 bank = bankBeforeBet
             elif sumOfHand(playerHand) > sumOfHand(dealerHand):
                 print("Your hand:", end=" ")
                 showHand(playerHand)
-                print("You have won.")
+                print("You have won. \nGain: " + str(bet) + "$")
                 bank += bet
             else:
                 print("Your hand:", end=" ")
                 showHand(playerHand)
-                print("You have lost.")
+                print("You have lost. \nLoss: " + str(bet) + "$")
                 bank -= bet
 
 
@@ -274,11 +283,12 @@ while playAgain == 1:
     clear()
     bankBeforeBet = bank
     bet = takeBets()
-    time.sleep(1)
+    clear()
     gameStart()
     reinitiateVars()
     if bank <= 0:
-        print("Your current money status: " + str(bank))
-        print("You don't have any more money to bet. Gambling is really a hell of a drug.")
+        print("\nYour current money status: " + str(bank))
+        print("You don't have any more money to bet.\n")
         break
-    playAgain = int(input("\nWanna try your luck again? \n1. Yes \n2. No\n"))
+    print("\nPlay again? \n1. Yes \n2. No\n")
+    playAgain = int(msvcrt.getch())
