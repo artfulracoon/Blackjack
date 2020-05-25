@@ -70,6 +70,7 @@ def takeBets():
 
     global bank
     currentBet = 0
+    betCurrent = 0
     while True:
 
         print("Current bet: " + str(currentBet) + "\n")
@@ -95,20 +96,15 @@ def takeBets():
         elif betInput == 6:
             betCurrent = 1000
         elif betInput == 9:
+
             if currentBet == 0:
-                clear()
-                print("You cannot bet below zero!")
-                time.sleep(1.5)
                 currentBet -= betCurrent
             else:
                 currentBet -= betCurrent*2
-
         currentBet += betCurrent
         if currentBet > bank:
             currentBet -= betCurrent
-            clear()
-            print("Your bet cannot exceed your bank!")
-            time.sleep(1.5)
+
         clear()
     return currentBet
 
@@ -130,7 +126,9 @@ def dealHand(mylist):
 
 def dealerTurn():
     global dealerHand
-    print("The dealer's hand consists of: ", end=" ")
+    time.sleep(0.5)
+    print("\nThe dealer's hand consists of: ", end=" ")
+    time.sleep(0.5)
     showHand(dealerHand)
     sumsum = sumOfHand(dealerHand)
 
@@ -142,9 +140,11 @@ def dealerTurn():
         return 1
     elif sumsum < 17:
         chosenCard1 = chooseCard()
-        print("\nThe dealer draws a card: " + str(chosenCard1))
+        print("The dealer draws a card: " + str(chosenCard1))
         dealerHand.append(chosenCard1)
+        time.sleep(0.5)
         print("New sum is: " + str(sumOfHand(dealerHand)))
+        time.sleep(0.5)
         return dealerTurn()
 
 
@@ -285,9 +285,14 @@ while True:
     reinitiateVars()
     if bank <= 0:
         print("\nYour current money status: " + str(bank))
-        print("You don't have any more money to bet.\n")
-        break
-    print("\nPlay again? \nEnter to Continue \n0 to Exit\n")
+        print("You don't have any more money to bet.\n\nEnter to restart\n0 to exit")
+        restart = getValidInput([0, b'\r'])
+        if restart == 0:
+            break
+        else:
+            bank = 1000
+            continue
+    print("\nEnter to Continue \n0 to Exit\n")
     playAgain = getValidInput([0, b'\r'])
     if playAgain == 0:
         break
