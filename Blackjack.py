@@ -12,6 +12,13 @@ deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J', 'J', 'J', 'A', 'A', 'A
 playerHand = []
 dealerHand = []
 
+cardBack = ["  _____",
+            "|\ ~ /|",
+            "|}}:{{|",
+            "|}}:{{|",
+            "|}}:{{|",
+            "|/_~_\|"]
+
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -29,6 +36,143 @@ def getValidInput(scopeArray):
                 return variable
             else:
                 print("Non-valid input! Please try again.")
+
+
+def cardVisualizer(card):
+    if card == 'K':
+        array = [
+            " _____",
+            "|K  WW|",
+            "| ^ {)|",
+            "|(.)%%|",
+            "| |%%%|",
+            "|_%%%>|"]
+
+    if card == 'J':
+        array = [
+            " _____ ",
+            "|J  ww| ",
+            "| ^ {)| ",
+            "| ^ {)| ",
+            "|(.)% | ",
+            "|__%%[| "]
+
+    if card == 'Q':
+        array = [
+            " _____",
+            "|Q  ww|",
+            "| ^ {(|",
+            "|(.)%%|",
+            "| |%%%|",
+            "|_%%%O|"]
+
+    if card == 10:
+        array = [
+            " _____",
+            "|10 ^ |",
+            "|^ ^ ^|",
+            "|^ ^ ^|",
+            "|^ ^ ^|",
+            "|___0I|"
+        ]
+
+    if card == 9:
+        array = [
+            " _____",
+            "|9    |",
+            "|^ ^ ^|",
+            "|^ ^ ^|",
+            "|^ ^ ^|",
+            "|___ 6|"
+        ]
+
+    if card == 8:
+        array = [
+            " _____",
+            "|8    |",
+            "|^ ^ ^|",
+            "| ^ ^ |",
+            "|^ ^ ^|",
+            "|___ 8|"
+        ]
+
+    if card == 7:
+        array = [
+            " _____",
+            "|7    |",
+            "| ^ ^ |",
+            "|^ ^ ^|",
+            "| ^ ^ |",
+            "|___ L|"
+        ]
+
+    if card == 6:
+        array = [
+            " _____",
+            "|6    |",
+            "| ^ ^ |",
+            "| ^ ^ |",
+            "| ^ ^ |",
+            "|___ 9|"
+        ]
+
+    if card == 5:
+        array = [
+            " _____",
+            "|5    |",
+            "| ^ ^ |",
+            "|  ^  |",
+            "| ^ ^ |",
+            "|___ S|"
+        ]
+
+    if card == 4:
+        array = [
+            " _____",
+            "|4    |",
+            "| ^ ^ |",
+            "|     |",
+            "| ^ ^ |",
+            "|___ h|"
+        ]
+
+    if card == 3:
+        array = [
+            " _____",
+            "|3    |",
+            "| ^ ^ |",
+            "|     |",
+            "|  ^  |",
+            "|___ E|"
+        ]
+
+    if card == 2:
+        array = [
+            " _____",
+            "|2    |",
+            "|  ^  |",
+            "|     |",
+            "|  ^  |",
+            "|____Z|"
+        ]
+
+    if card == 'A':
+        array = [
+            " _____",
+            "|A .  |",
+            "| /.\ |",
+            "|(_._)|",
+            "|  |  |",
+            "|____V|"
+        ]
+
+    return array
+
+
+def cardPrinter(arr1, arr2):
+    for i in range(6):
+        print(arr1[i], end="  ")
+        print(arr2[i])
 
 
 def reinitiateVars():
@@ -83,6 +227,7 @@ def takeBets():
 
         if betInput == b'\r':
             break
+
         if betInput == 1:
             betCurrent = 5
         elif betInput == 2:
@@ -96,11 +241,11 @@ def takeBets():
         elif betInput == 6:
             betCurrent = 1000
         elif betInput == 9:
-
             if currentBet == 0:
                 currentBet -= betCurrent
             else:
                 currentBet -= betCurrent*2
+
         currentBet += betCurrent
         if currentBet > bank:
             currentBet -= betCurrent
@@ -235,12 +380,12 @@ def playerTurn():
 
 
 def gameStart():
-    global bank, bet, playerHand, dealerHand
-    dealHand(dealerHand)
-    dealHand(playerHand)
+    global bank, bet, playerHand, dealerHand, cardBack
     print("Your bet: " + str(bet))
     print("\nDealer's hand: " + str(dealerHand[0]) + " and one face down\n")
-    print("Your hand:", end=" ")
+    card = cardVisualizer(dealerHand[0])
+    cardPrinter(card, cardBack)
+    print("\nYour hand:", end=" ")
     showHand(playerHand)
     print("Your cards sum up to: " + str(sumOfHand(playerHand)))
     conclusion = playerTurn()
@@ -279,6 +424,9 @@ def gameStart():
 while True:
     clear()
     bankBeforeBet = bank
+    dealHand(dealerHand)
+    dealHand(playerHand)
+    # if playerHand
     bet = takeBets()
     clear()
     gameStart()
