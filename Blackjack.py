@@ -17,6 +17,20 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+def getValidInput(scopeArray):
+    while True:
+        variable = msvcrt.getch()
+        try:
+            if int(variable) in scopeArray:
+                variable = int(variable)
+                return variable
+        except ValueError:
+            if variable == b'\r' and b'\r' in scopeArray:
+                return variable
+            else:
+                print("Non-valid input! Please try again.")
+
+
 def reinitiateVars():
     global deck, playerHand, dealerHand, cardsInDeck
     deck = ['K', 'K', 'K', 'K', 'Q', 'Q', 'Q', 'Q', 'J', 'J', 'J', 'J', 'A', 'A', 'A', 'A', 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7,
@@ -53,7 +67,10 @@ def sumOfHand(someList):
 
 
 def takeBets():
-    def betInputCaller():
+
+    global bank
+    currentBet = 0
+    while True:
 
         print("Current bet: " + str(currentBet) + "\n")
         print("You have " + str(bank) +
@@ -61,26 +78,8 @@ def takeBets():
         print(
             "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Undo\n\nEnter to continue")
 
-        theInput = msvcrt.getch()
+        betInput = getValidInput([1, 2, 3, 4, 5, 6, 9, b'\r'])
 
-        if theInput == b'\r':
-            return theInput
-
-        while int(theInput) not in [1, 2, 3, 4, 5, 6, 9]:
-            clear()
-            print("Current bet: " + str(currentBet) + "\n")
-            print("Wrong Input! Please state your bet according to: ")
-            print(
-                "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Undo\n\nEnter to continue")
-
-            theInput = msvcrt.getch()
-        return int(theInput)
-
-    global bank
-    currentBet = 0
-    while True:
-
-        betInput = betInputCaller()
         if betInput == b'\r':
             break
         if betInput == 1:
@@ -153,14 +152,14 @@ def playerTurn():
     def playerTurnNoDouble():
         global bet, playerHand
         choiceLocal1 = 3
-        while choiceLocal1 not in [1,2]:
-            print("\nHit, Stand?\n1. Hit\n2. Stand\n")
-            choiceLocal1 = int(msvcrt.getch())
-        sumsum1 = sumOfHand(playerHand)
+        print("\nHit, Stand?\n1. Hit\n2. Stand\n")
+        choiceLocal1 = getValidInput([1, 2])
 
-        if sumsum1 == 21:
+        sumLocal1 = sumOfHand(playerHand)
+
+        if sumLocal1 == 21:
             return 2
-        elif sumsum1 > 21:
+        elif sumLocal1 > 21:
             return 0
 
         if choiceLocal1 == 1:
@@ -184,24 +183,23 @@ def playerTurn():
 
     global bet, playerHand
 
-    sumsum = sumOfHand(playerHand)
+    sumLocal = sumOfHand(playerHand)
 
-    if sumsum == 21:
+    if sumLocal == 21:
         return 2
 
-    elif sumsum > 21:
+    elif sumLocal > 21:
         return 0
 
     if bet*2 <= bank:
         choiceLocal = 4
         while choiceLocal not in [1, 2, 3]:
             print("\nHit, Stand or Double ?\n1. Hit\n2. Stand\n3. Double\n")
-            choiceLocal = int(msvcrt.getch())
+            choiceLocal = getValidInput([1, 2, 3])
+
     else:
-        choiceLocal = 3
-        while choiceLocal not in [1, 2]:
-            print("\nHit or Stand?\n1. Hit\n2. Stand\n")
-            choiceLocal = int(msvcrt.getch())
+        print("\nHit or Stand?\n1. Hit\n2. Stand\n")
+        choiceLocal = getValidInput([1, 2])
 
     if choiceLocal == 1:
         clear()
@@ -226,9 +224,9 @@ def playerTurn():
         clear()
         print("You have chosen to double down. Good luck.")
         bet *= 2
-        chosenCard2 = chooseCard()
-        playerHand.append(chosenCard2)
-        print("You draw the card: " + str(chosenCard2))
+        cardChosen2 = chooseCard()
+        playerHand.append(cardChosen2)
+        print("You draw the card: " + str(cardChosen2))
         print("Your hand:", end=" ")
         showHand(playerHand)
         print("Your new sum is: " + str(sumOfHand(playerHand)) + "\n")
@@ -278,8 +276,7 @@ def gameStart():
                 bank -= bet
 
 
-playAgain = 1
-while playAgain == 1:
+while True:
     clear()
     bankBeforeBet = bank
     bet = takeBets()
@@ -290,5 +287,9 @@ while playAgain == 1:
         print("\nYour current money status: " + str(bank))
         print("You don't have any more money to bet.\n")
         break
-    print("\nPlay again? \n1. Yes \n2. No\n")
-    playAgain = int(msvcrt.getch())
+    print("\nPlay again? \nEnter to Continue \n0 to Exit\n")
+    playAgain = getValidInput([0, b'\r'])
+    if playAgain == 0:
+        break
+    else:
+        continue
