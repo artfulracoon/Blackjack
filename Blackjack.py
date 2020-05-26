@@ -48,15 +48,6 @@ def cardVisualizer(card):
             "| |%%%|",
             "|_%%%>|"]
 
-    if card == 'J':
-        array = [
-            " _____ ",
-            "|J  ww| ",
-            "| ^ {)| ",
-            "| ^ {)| ",
-            "|(.)% | ",
-            "|__%%[| "]
-
     if card == 'Q':
         array = [
             " _____",
@@ -65,6 +56,15 @@ def cardVisualizer(card):
             "|(.)%%|",
             "| |%%%|",
             "|_%%%O|"]
+
+    if card == 'J':
+        array = [
+            " _____ ",
+            "|J  ww| ",
+            "| ^ {)| ",
+            "| ^ {)| ",
+            "|(.)% | ",
+            "|__%%[| "]
 
     if card == 10:
         array = [
@@ -169,7 +169,13 @@ def cardVisualizer(card):
     return array
 
 
-def cardPrinter(arr1, arr2):
+def cardPrinterOne(arr1):
+    for i in range(6):
+        print(arr1[i])
+    print()
+
+
+def cardPrinterTwo(arr1, arr2):
     for i in range(6):
         print(arr1[i], end="  ")
         print(arr2[i])
@@ -286,6 +292,7 @@ def dealerTurn():
     elif sumsum < 17:
         chosenCard1 = chooseCard()
         print("The dealer draws a card: " + str(chosenCard1))
+        cardPrinterOne(cardVisualizer(chosenCard1))
         dealerHand.append(chosenCard1)
         time.sleep(0.5)
         print("New sum is: " + str(sumOfHand(dealerHand)))
@@ -384,10 +391,12 @@ def gameStart():
     print("Your bet: " + str(bet))
     print("\nDealer's hand: " + str(dealerHand[0]) + " and one face down\n")
     card = cardVisualizer(dealerHand[0])
-    cardPrinter(card, cardBack)
+    cardPrinterTwo(card, cardBack)
     print("\nYour hand:", end=" ")
     showHand(playerHand)
-    print("Your cards sum up to: " + str(sumOfHand(playerHand)))
+    cardPrinterTwo(cardVisualizer(
+        playerHand[0]), cardVisualizer(playerHand[1]))
+    print("\nYour cards sum up to: " + str(sumOfHand(playerHand)))
     conclusion = playerTurn()
     if conclusion == 0:
         print("Your hand consists of: ", end=" ")
