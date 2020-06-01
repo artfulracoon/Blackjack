@@ -1,7 +1,10 @@
 import random
 import time
 import os
-import msvcrt
+if os.name == 'nt':
+    import msvcrt
+else:
+    import getch
 
 bank = 1000
 bankBeforeBet = 0
@@ -26,13 +29,16 @@ def clear():
 
 def getValidInput(scopeArray):
     while True:
-        variable = msvcrt.getch()
+        if os.name == 'nt':
+            variable = msvcrt.getch()
+        else:
+            variable = getch.getch()
         try:
             if int(variable) in scopeArray:
                 variable = int(variable)
                 return variable
         except ValueError:
-            if variable == b'\r' and b'\r' in scopeArray:
+            if (variable == b'\r' and b'\r' in scopeArray) or (variable == '\n' and '\n' in scopeArray):
                 return variable
             else:
                 print("Non-valid input! Please try again.")
@@ -229,9 +235,9 @@ def takeBets():
         print(
             "1. 5 \n2. 10 \n3. 50 \n4. 100 \n5. 500 \n6. 1000\n\n9. Undo\n\nEnter to continue")
 
-        betInput = getValidInput([1, 2, 3, 4, 5, 6, 9, b'\r'])
+        betInput = getValidInput([1, 2, 3, 4, 5, 6, 9, b'\r', '\n'])
 
-        if betInput == b'\r':
+        if betInput == b'\r' or betInput == '\n':
             break
 
         if betInput == 1:
@@ -443,14 +449,14 @@ while True:
     if bank <= 0:
         print("\nYour current money status: " + str(bank))
         print("You don't have any more money to bet.\n\nEnter to restart\n0 to exit")
-        restart = getValidInput([0, b'\r'])
+        restart = getValidInput([0, b'\r', '\n'])
         if restart == 0:
             break
         else:
             bank = 1000
             continue
     print("\nEnter to Continue \n0 to Exit\n")
-    playAgain = getValidInput([0, b'\r'])
+    playAgain = getValidInput([0, b'\r', '\n'])
     if playAgain == 0:
         break
     else:
